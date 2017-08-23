@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -14,10 +15,19 @@ import android.view.View;
  */
 
 public class TouchPullView extends View {
+    private static final String TAG = TouchPullView.class.getSimpleName();
+
     // 圆的画笔
     private Paint mCirclePaint;
     // 圆的半径
     private int mCircleRadius = 150;
+    private int mCirclePointX, mCirclePointY;
+
+    // 可拖动的高度
+    private int mDragHeight = 800;
+
+    // 进度值
+    private float mProgress;
 
     public TouchPullView(Context context) {
         super(context);
@@ -58,8 +68,83 @@ public class TouchPullView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        float x = getWidth() >> 1;
-        float y = getHeight() >> 1;
-        canvas.drawCircle(x, y, mCircleRadius, mCirclePaint);
+        canvas.drawCircle(mCirclePointX,
+                mCirclePointY,
+                mCircleRadius,
+                mCirclePaint);
+    }
+
+    /**
+     * 当进行测量时触发
+     *
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // 宽度的意图，宽度的类型
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+
+        int iHeight = (int) ((mDragHeight * mProgress + 0.5f) + getPaddingTop() + getPaddingBottom());
+        int iWidth = 2 * mCircleRadius + getPaddingLeft() + getPaddingRight();
+
+        int measureWidth, measureHeight;
+
+        if (widthMode == MeasureSpec.EXACTLY) {
+            // 确切的
+            measureWidth = width;
+        } else if (widthMode == MeasureSpec.AT_MOST) {
+            // 最多的
+            measureWidth = Math.min(iWidth, width);
+        }else {
+            measureWidth = iWidth;
+        }
+
+        if (heightMode == MeasureSpec.EXACTLY) {
+            // 确切的
+            measureHeight = height;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            // 最多的
+            measureHeight = Math.min(iHeight, height);
+        }else {
+            measureHeight = iHeight;
+        }
+
+        // 设置测量的高度宽度
+        setMeasuredDimension(measureWidth, measureHeight);
+    }
+
+    /**
+     * 当大小改变时触发
+     *
+     * @param w
+     * @param h
+     * @param oldw
+     * @param oldh
+     */
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mCirclePointX = getWidth() >> 1;
+        mCirclePointY = getHeight() >> 1;
+
+    }
+
+    /**
+     * 设置进度
+     *
+     * @param progress
+     */
+    public void setProgress(float progress) {
+        Log.d(TAG, "setProgress: " + progress);
+        mProgress = progress;
+        // 请求重新进行测量
+        requestLayout();
     }
 }
