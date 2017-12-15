@@ -1,4 +1,4 @@
-package com.kanbin.touchpull.widget;
+package com.sesame.touchpull.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;

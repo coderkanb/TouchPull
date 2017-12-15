@@ -1,11 +1,11 @@
-package com.kanbin.touchpull;
+package com.sesame.touchpull;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.kanbin.touchpull.widget.TouchPullView;
+import com.sesame.touchpull.widget.TouchPullView;
 
 public class MainActivity extends AppCompatActivity {
     private static final float TOUCH_MOVE_MAX_Y = 600;
